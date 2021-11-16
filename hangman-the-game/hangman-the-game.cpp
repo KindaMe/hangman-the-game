@@ -3,20 +3,21 @@
 #include <iostream>
 #include <vector>
 #include <ctype.h>
+#include <fstream>
+#include <string>
 
 void gameplayLoop(std::vector<std::string> words);
 std::string randomWord(std::vector<std::string> words);
 bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses);
 std::string spacer(std::string word);
+void readFile(std::vector<std::string>* words);
 
 int main()
 {
 	std::vector<std::string> words;
-	srand((unsigned)time(0));
+	readFile(&words);
 
-	words.push_back("POGGERS");
-	words.push_back("OMEGALUL");
-	words.push_back("POGCHAMP");
+	srand((unsigned)time(0));
 
 	std::cout << "HANGMAN - THE GAME\n";
 	std::cout << "******************\n";
@@ -158,4 +159,18 @@ std::string spacer(std::string word)
 		output += word.substr(i, 1) + " ";
 	}
 	return output;
+}
+
+void readFile(std::vector<std::string>* words)
+{
+	std::ifstream file;
+	std::string line;
+
+	file.open("words.txt");
+	while (getline(file, line))
+	{
+		words->push_back(line);
+	}
+
+	file.close();
 }
