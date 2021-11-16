@@ -72,27 +72,26 @@ void gameplayLoop(std::vector<std::string> words)
 		{
 			correctGuess = false;
 		}
-		if (score == length)
-		{
-			system("cls");
-			std::cout << "HANGMAN - THE GAME\n";
-			std::cout << "******************\n\n";
+	} while (score != length && health != 0);
 
-			std::cout << wordBlank;
+	if (score == length)
+	{
+		system("cls");
+		std::cout << "HANGMAN - THE GAME\n";
+		std::cout << "******************\n\n";
 
-			std::cout << "\n\nYou win!";
-			break;
-		}
-		else if (score != length && health == 0)
-		{
-			system("cls");
-			std::cout << "HANGMAN - THE GAME\n";
-			std::cout << "******************\n\n";
+		std::cout << wordBlank;
 
-			std::cout << wordBlank;
+		std::cout << "\n\nYou win!";
+	}
+	else if (health == 0)
+	{
+		system("cls");
+		std::cout << "HANGMAN - THE GAME\n";
+		std::cout << "******************\n\n";
 
-			std::cout << "\n\nYou lose.";
-			break;
-		}
-	} while (true);
+		std::cout << wordBlank;
+
+		std::cout << "\n\nYou lose.";
+	}
 }
