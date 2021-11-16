@@ -1,5 +1,3 @@
-//add categories later
-
 #include <iostream>
 #include <vector>
 #include <ctype.h>
@@ -11,6 +9,7 @@ std::string randomWord(std::vector<std::string> words);
 bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses);
 std::string spacer(std::string word);
 void readFile(std::vector<std::string>* words);
+bool restart();
 
 int main()
 {
@@ -19,20 +18,24 @@ int main()
 
 	srand((unsigned)time(0));
 
+	do
+	{
+		system("cls");
+		std::cout << "HANGMAN - THE GAME\n";
+		std::cout << "******************\n";
+		std::cout << "PRESS ENTER TO START...\n";
+		std::cin.get();
+
+		gameplayLoop(words);
+	} while (restart() == true);
+
+	system("cls");
 	std::cout << "HANGMAN - THE GAME\n";
 	std::cout << "******************\n";
-	std::cout << "PRESS ENTER TO START...\n";
-	std::cin.get();
 
-	gameplayLoop(words);
+	std::cout << "\nThanks for playing!\ngithub.com/KindaMe\n";
 
 	system("pause>0");
-}
-
-std::string randomWord(std::vector<std::string> words)
-{
-	int randomNumber = rand() % words.size();
-	return words[randomNumber];
 }
 
 void gameplayLoop(std::vector<std::string> words)
@@ -129,6 +132,12 @@ void gameplayLoop(std::vector<std::string> words)
 	}
 }
 
+std::string randomWord(std::vector<std::string> words)
+{
+	int randomNumber = rand() % words.size();
+	return words[randomNumber];
+}
+
 bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses)
 {
 	for (int i = 0; i < correctGuesses.size(); i++)
@@ -173,4 +182,21 @@ void readFile(std::vector<std::string>* words)
 	}
 
 	file.close();
+}
+
+bool restart()
+{
+	char yn;
+
+	std::cout << "\n\nRestart? (y/n)";
+	std::cin >> yn;
+	yn = toupper(yn);
+
+	switch (yn)
+	{
+	case 'Y':
+		return true;
+	default:
+		return false;
+	}
 }
