@@ -6,6 +6,7 @@
 
 void gameplayLoop(std::vector<std::string> words);
 std::string randomWord(std::vector<std::string> words);
+void difficulty(int* health);
 bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses);
 std::string spacer(std::string word);
 void readFile(std::vector<std::string>* words);
@@ -23,7 +24,7 @@ int main()
 		system("cls");
 		std::cout << "HANGMAN - THE GAME\n";
 		std::cout << "******************\n";
-		std::cout << "PRESS ENTER TO START...\n";
+		std::cout << "\nPRESS ENTER TO START...\n";
 		std::cin.get();
 
 		gameplayLoop(words);
@@ -43,12 +44,16 @@ void gameplayLoop(std::vector<std::string> words)
 	std::string word = randomWord(words);
 	int length = word.length();
 	std::string wordBlank = std::string(length, '_');
+
 	int health = 6;
+	int score = 0;
+
 	char guess;
 	std::string wrongGuesses;
 	std::string correctGuesses;
 	bool correctGuess = false;
-	int score = 0;
+
+	difficulty(&health);
 
 	do
 	{
@@ -56,12 +61,12 @@ void gameplayLoop(std::vector<std::string> words)
 		{
 			system("cls");
 			std::cout << "HANGMAN - THE GAME\n";
-			std::cout << "******************\n";
+			std::cout << "******************\n\n";
 
 			std::cout << spacer(wordBlank);
 
-			std::cout << "\n\nATTEMPTS LEFT: " << health;
-			std::cout << "\nUSED LETTERS: " << spacer(wrongGuesses);
+			std::cout << "\n\n\nATTEMPTS LEFT: " << health;
+			(wrongGuesses.length() == 0) ? std::cout << "\nUSED LETTERS: NONE" : std::cout << "\nUSED LETTERS: " << spacer(wrongGuesses);
 			std::cout << "\n\nENTER YOUR GUESS: ";
 			std::cin >> guess;
 			guess = toupper(guess);
@@ -70,11 +75,11 @@ void gameplayLoop(std::vector<std::string> words)
 			{
 				system("cls");
 				std::cout << "HANGMAN - THE GAME\n";
-				std::cout << "******************\n";
+				std::cout << "******************\n\n";
 
 				std::cout << spacer(wordBlank);
 
-				std::cout << "\n\nYOU TRIED THAT ONE ALREADY!";
+				std::cout << "\n\n\nYOU TRIED THAT ONE ALREADY!";
 				std::cin.clear();
 				std::cin.ignore();
 				std::cin.get();
@@ -83,11 +88,11 @@ void gameplayLoop(std::vector<std::string> words)
 			{
 				system("cls");
 				std::cout << "HANGMAN - THE GAME\n";
-				std::cout << "******************\n";
+				std::cout << "******************\n\n";
 
 				std::cout << spacer(wordBlank);
 
-				std::cout << "\n\nWRONG LETTER!";
+				std::cout << "\n\n\nWRONG LETTER!";
 				std::cin.clear();
 				std::cin.ignore();
 				std::cin.get();
@@ -124,11 +129,11 @@ void gameplayLoop(std::vector<std::string> words)
 
 	if (score == length)
 	{
-		std::cout << "\n\nYOU WIN!";
+		std::cout << "\n\n\nYOU WIN!";
 	}
 	else if (health == 0)
 	{
-		std::cout << "\n\nYOU LOSE.";
+		std::cout << "\n\n\nYOU LOSE.";
 	}
 }
 
@@ -136,6 +141,50 @@ std::string randomWord(std::vector<std::string> words)
 {
 	int randomNumber = rand() % words.size();
 	return words[randomNumber];
+}
+
+void difficulty(int* health)
+{
+	bool valid = false;
+
+	do
+	{
+		system("cls");
+		std::cout << "HANGMAN - THE GAME\n";
+		std::cout << "******************\n\n";
+
+		std::cout << "SET DIFFICULTY:\n";
+		std::cout << "\n1 - EASY";
+		std::cout << "\n2 - NORMAL";
+		std::cout << "\n3 - HARD\n\n";
+
+		char mode;
+
+		std::cin >> mode;
+
+		switch (mode)
+		{
+		case '1':
+			*health = 8;
+			valid = true;
+			break;
+		case '2':
+			*health = 6;
+			valid = true;
+			break;
+		case '3':
+			*health = 4;
+			valid = true;
+			break;
+		default:
+			valid = false;
+			std::cout << "WRONG INPUT - TRY AGAIN...";
+			std::cin.clear();
+			std::cin.ignore();
+			std::cin.get();
+			break;
+		}
+	} while (valid == false);
 }
 
 bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses)
