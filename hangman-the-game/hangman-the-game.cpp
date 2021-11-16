@@ -2,19 +2,21 @@
 
 #include <iostream>
 #include <vector>
+#include <ctype.h>
 
 void gameplayLoop(std::vector<std::string> words);
 std::string randomWord(std::vector<std::string> words);
 bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses);
+std::string spacer(std::string word);
 
 int main()
 {
 	std::vector<std::string> words;
 	srand((unsigned)time(0));
 
-	words.push_back("poggers");
-	words.push_back("omegalul");
-	words.push_back("pogchamp");
+	words.push_back("POGGERS");
+	words.push_back("OMEGALUL");
+	words.push_back("POGCHAMP");
 
 	std::cout << "HANGMAN - THE GAME\n";
 	std::cout << "******************\n";
@@ -52,12 +54,13 @@ void gameplayLoop(std::vector<std::string> words)
 			std::cout << "HANGMAN - THE GAME\n";
 			std::cout << "******************\n";
 
-			std::cout << wordBlank;
+			std::cout << spacer(wordBlank);
 
-			std::cout << "\n\nTries left: " << health;
-			std::cout << "\nUsed letters: " << wrongGuesses;
-			std::cout << "\nEnter your guess: ";
+			std::cout << "\n\nATTEMPTS LEFT: " << health;
+			std::cout << "\nUSED LETTERS: " << spacer(wrongGuesses);
+			std::cout << "\n\nENTER YOUR GUESS: ";
 			std::cin >> guess;
+			guess = toupper(guess);
 
 			if (validGuess(guess, correctGuesses, wrongGuesses) == false)
 			{
@@ -65,16 +68,27 @@ void gameplayLoop(std::vector<std::string> words)
 				std::cout << "HANGMAN - THE GAME\n";
 				std::cout << "******************\n";
 
-				std::cout << wordBlank;
+				std::cout << spacer(wordBlank);
 
-				std::cout << "\n\nTries left: " << health;
-
-				std::cout << "\nYou tried that one already!";
+				std::cout << "\n\nYOU TRIED THAT ONE ALREADY!";
 				std::cin.clear();
 				std::cin.ignore();
 				std::cin.get();
 			}
-		} while (validGuess(guess, correctGuesses, wrongGuesses) == false);
+			else if (isalpha(guess) == false)
+			{
+				system("cls");
+				std::cout << "HANGMAN - THE GAME\n";
+				std::cout << "******************\n";
+
+				std::cout << spacer(wordBlank);
+
+				std::cout << "\n\nWRONG LETTER!";
+				std::cin.clear();
+				std::cin.ignore();
+				std::cin.get();
+			}
+		} while (validGuess(guess, correctGuesses, wrongGuesses) == false || isalpha(guess) == false);
 
 		for (int i = 0; i < length; i++)
 		{
@@ -106,11 +120,11 @@ void gameplayLoop(std::vector<std::string> words)
 
 	if (score == length)
 	{
-		std::cout << "\n\nYou win!";
+		std::cout << "\n\nYOU WIN!";
 	}
 	else if (health == 0)
 	{
-		std::cout << "\n\nYou lose.";
+		std::cout << "\n\nYOU LOSE.";
 	}
 }
 
@@ -132,4 +146,16 @@ bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses
 	}
 
 	return true;
+}
+
+std::string spacer(std::string word)
+{
+	int length = word.size();
+	std::string output;
+
+	for (int i = 0; i < length; i = i++)
+	{
+		output += word.substr(i, 1) + " ";
+	}
+	return output;
 }
