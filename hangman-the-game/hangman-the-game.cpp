@@ -5,7 +5,7 @@
 
 void gameplayLoop(std::vector<std::string> words);
 std::string randomWord(std::vector<std::string> words);
-bool validGuess(char guess, std::vector<char>wrongGuesses, std::vector<char>correctGuesses);
+bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses);
 
 int main()
 {
@@ -39,8 +39,8 @@ void gameplayLoop(std::vector<std::string> words)
 	std::string wordBlank = std::string(length, '_');
 	int health = 6;
 	char guess;
-	std::vector<char>wrongGuesses;
-	std::vector<char>correctGuesses;
+	std::string wrongGuesses;
+	std::string correctGuesses;
 	bool correctGuess = false;
 	int score = 0;
 
@@ -55,6 +55,7 @@ void gameplayLoop(std::vector<std::string> words)
 			std::cout << wordBlank;
 
 			std::cout << "\n\nTries left: " << health;
+			std::cout << "\nUsed letters: " << wrongGuesses;
 			std::cout << "\nEnter your guess: ";
 			std::cin >> guess;
 
@@ -113,7 +114,7 @@ void gameplayLoop(std::vector<std::string> words)
 	}
 }
 
-bool validGuess(char guess, std::vector<char> wrongGuesses, std::vector<char> correctGuesses)
+bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses)
 {
 	for (int i = 0; i < correctGuesses.size(); i++)
 	{
