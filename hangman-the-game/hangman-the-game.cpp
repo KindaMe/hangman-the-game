@@ -57,7 +57,7 @@ void gameplayLoop()
 	std::string wordBlank;
 	for (int i = 0; i < length; i++)
 	{
-		(word[i] == ' ') ? wordBlank.push_back(' ') : wordBlank.push_back('_');
+		(isalpha(word[i])) ? wordBlank.push_back('_') : wordBlank.push_back(word[i]);
 	}
 
 	int health = difficulty();
@@ -217,7 +217,7 @@ std::string readFile(std::string filePath, int* spaceCounter)
 
 	for (int i = 0; i < word.size(); i++)
 	{
-		if (word[i] == ' ')
+		if (!(isalpha(word[i])))
 		{
 			*spaceCounter = *spaceCounter + 1;
 		}
