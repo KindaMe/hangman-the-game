@@ -1,21 +1,28 @@
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+
 #include <iostream>
 #include <vector>
 #include <ctype.h>
 #include <fstream>
 #include <string>
+#include <experimental/filesystem>
 
-void gameplayLoop(std::vector<std::string> words);
+namespace fs = std::experimental::filesystem::v1;
+
+void gameplayLoop(std::vector<std::string> words, std::string categoryName);
 std::string randomWord(std::vector<std::string> words);
 void difficulty(int* health);
 bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses);
 std::string spacer(std::string word);
-void readFile(std::vector<std::string>* words);
+void readFile(std::vector<std::string>* words, std::string fileName);
 bool restart();
+std::string chooseCategory(std::vector<std::string>* words);
+std::string convertPath(std::string path);
 
 int main()
 {
 	std::vector<std::string> words;
-	readFile(&words);
+	std::string categoryName;
 
 	srand((unsigned)time(0));
 
@@ -27,7 +34,8 @@ int main()
 		std::cout << "\nPRESS ENTER TO START...\n";
 		std::cin.get();
 
-		gameplayLoop(words);
+		categoryName = chooseCategory(&words);
+		gameplayLoop(words, categoryName);
 	} while (restart() == true);
 
 	system("cls");
@@ -39,7 +47,7 @@ int main()
 	system("pause>0");
 }
 
-void gameplayLoop(std::vector<std::string> words)
+void gameplayLoop(std::vector<std::string> words, std::string categoryName)
 {
 	std::string word = randomWord(words);
 	int length = word.length();
@@ -61,7 +69,8 @@ void gameplayLoop(std::vector<std::string> words)
 		{
 			system("cls");
 			std::cout << "HANGMAN - THE GAME\n";
-			std::cout << "******************\n\n";
+			std::cout << "******************\n";
+			std::cout << "CATEGORY: " << categoryName << "\n\n";
 
 			std::cout << spacer(wordBlank);
 
@@ -75,7 +84,8 @@ void gameplayLoop(std::vector<std::string> words)
 			{
 				system("cls");
 				std::cout << "HANGMAN - THE GAME\n";
-				std::cout << "******************\n\n";
+				std::cout << "******************\n";
+				std::cout << "CATEGORY: " << categoryName << "\n\n";
 
 				std::cout << spacer(wordBlank);
 
@@ -88,7 +98,8 @@ void gameplayLoop(std::vector<std::string> words)
 			{
 				system("cls");
 				std::cout << "HANGMAN - THE GAME\n";
-				std::cout << "******************\n\n";
+				std::cout << "******************\n";
+				std::cout << "CATEGORY: " << categoryName << "\n\n";
 
 				std::cout << spacer(wordBlank);
 
@@ -123,17 +134,18 @@ void gameplayLoop(std::vector<std::string> words)
 
 	system("cls");
 	std::cout << "HANGMAN - THE GAME\n";
-	std::cout << "******************\n\n";
+	std::cout << "******************\n";
+	std::cout << "CATEGORY: " << categoryName << "\n\n";
 
 	std::cout << word;
 
 	if (score == length)
 	{
-		std::cout << "\n\n\nYOU WIN!";
+		std::cout << "\n\nYOU WIN!";
 	}
 	else if (health == 0)
 	{
-		std::cout << "\n\n\nYOU LOSE.";
+		std::cout << "\n\nYOU LOSE.";
 	}
 }
 
@@ -219,12 +231,14 @@ std::string spacer(std::string word)
 	return output;
 }
 
-void readFile(std::vector<std::string>* words)
+void readFile(std::vector<std::string>* words, std::string fileName)
 {
 	std::ifstream file;
 	std::string line;
 
-	file.open("words.txt");
+	words->clear();
+
+	file.open(fileName);
 	while (getline(file, line))
 	{
 		words->push_back(line);
@@ -248,4 +262,48 @@ bool restart()
 	default:
 		return false;
 	}
+}
+
+std::string chooseCategory(std::vector<std::string>* words)
+{
+	std::string categoryName;
+	int choice;
+	std::vector<std::string> categories;
+
+	system("cls");
+	std::cout << "HANGMAN - THE GAME\n";
+	std::cout << "******************\n\n";
+
+	std::cout << "CHOOSE CATEGORY: \n\n";
+
+	for (const auto& name : fs::directory_iterator("Categories/"))//gets file paths in folder
+	{
+		fs::path path = name;
+		std::string path_string{ path.u8string() };
+
+		categories.push_back(path_string);
+	}
+
+	for (int i = 0; i < categories.size(); i++)
+	{
+		std::cout << i + 1 << " - " << convertPath(categories[i]) << "\n";
+	}
+
+	std::cout << "\n";
+	std::cin >> choice;
+	readFile(words, categories[choice - 1]);
+
+	return convertPath(categories[choice - 1]);
+}
+
+std::string convertPath(std::string path)
+{
+	std::string newName;
+
+	for (int i = 11; i <= (path.size() - 5); i++)//skips "category/" and ends before ".txt"
+	{
+		newName.push_back(toupper(path[i]));
+	}
+
+	return newName;
 }
