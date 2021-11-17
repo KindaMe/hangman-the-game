@@ -1,5 +1,3 @@
-//get random word at readFile(), no point at keeping entire vector
-
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 
 #include <iostream>
@@ -16,7 +14,7 @@ std::string randomWord(std::vector<std::string> words);
 int difficulty();
 bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses);
 std::string spacer(std::string word);
-std::string readFile(std::string filePath);
+std::string readFile(std::string filePath, int* spaceCounter);
 bool restart();
 std::string chooseCategory();
 std::string convertPath(std::string filePath);
@@ -53,12 +51,17 @@ void gameplayLoop()
 	std::string categoryPath = chooseCategory();
 	std::string categoryName = convertPath(categoryPath);
 
-	std::string word = readFile(categoryPath);
+	int spaceCounter = 0;
+	std::string word = readFile(categoryPath, &spaceCounter);
 	int length = word.length();
-	std::string wordBlank = std::string(length, '_');
+	std::string wordBlank;
+	for (int i = 0; i < length; i++)
+	{
+		(word[i] == ' ') ? wordBlank.push_back(' ') : wordBlank.push_back('_');
+	}
 
 	int health = difficulty();
-	int score = 0;
+	int score = 0 + spaceCounter;
 
 	char guess;
 	std::string wrongGuesses;
@@ -195,7 +198,7 @@ std::string convertPath(std::string filePath)
 	return newName;
 }
 
-std::string readFile(std::string filePath)
+std::string readFile(std::string filePath, int* spaceCounter)
 {
 	std::vector<std::string> words;
 
@@ -210,7 +213,17 @@ std::string readFile(std::string filePath)
 
 	file.close();
 
-	return randomWord(words);
+	std::string word = randomWord(words);
+
+	for (int i = 0; i < word.size(); i++)
+	{
+		if (word[i] == ' ')
+		{
+			*spaceCounter = *spaceCounter + 1;
+		}
+	}
+
+	return word;
 }
 
 std::string randomWord(std::vector<std::string> words)
