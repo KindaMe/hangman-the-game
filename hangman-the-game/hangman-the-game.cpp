@@ -1,3 +1,5 @@
+//get random word at readFile(), no point at keeping entire vector
+
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 
 #include <iostream>
@@ -9,21 +11,18 @@
 
 namespace fs = std::experimental::filesystem::v1;
 
-void gameplayLoop(std::vector<std::string> words, std::string categoryName);
+void gameplayLoop();
 std::string randomWord(std::vector<std::string> words);
-void difficulty(int* health);
+int difficulty();
 bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses);
 std::string spacer(std::string word);
-void readFile(std::vector<std::string>* words, std::string fileName);
+std::string readFile(std::string filePath);
 bool restart();
-std::string chooseCategory(std::vector<std::string>* words);
-std::string convertPath(std::string path);
+std::string chooseCategory();
+std::string convertPath(std::string filePath);
 
 int main()
 {
-	std::vector<std::string> words;
-	std::string categoryName;
-
 	srand((unsigned)time(0));
 
 	do
@@ -34,8 +33,7 @@ int main()
 		std::cout << "\nPRESS ENTER TO START...\n";
 		std::cin.get();
 
-		categoryName = chooseCategory(&words);
-		gameplayLoop(words, categoryName);
+		gameplayLoop();
 	} while (restart() == true);
 
 	system("cls");
@@ -44,24 +42,28 @@ int main()
 
 	std::cout << "\nThanks for playing!\ngithub.com/KindaMe\n";
 
-	system("pause>0");
+	std::cin.clear();
+	std::cin.ignore();
+	std::cin.get();
+	return 0;
 }
 
-void gameplayLoop(std::vector<std::string> words, std::string categoryName)
+void gameplayLoop()
 {
-	std::string word = randomWord(words);
+	std::string categoryPath = chooseCategory();
+	std::string categoryName = convertPath(categoryPath);
+
+	std::string word = readFile(categoryPath);
 	int length = word.length();
 	std::string wordBlank = std::string(length, '_');
 
-	int health = 6;
+	int health = difficulty();
 	int score = 0;
 
 	char guess;
 	std::string wrongGuesses;
 	std::string correctGuesses;
 	bool correctGuess = false;
-
-	difficulty(&health);
 
 	do
 	{
@@ -149,16 +151,76 @@ void gameplayLoop(std::vector<std::string> words, std::string categoryName)
 	}
 }
 
+std::string chooseCategory()
+{
+	int choice, categoryIndex;
+	std::vector<std::string> categories;
+
+	system("cls");
+	std::cout << "HANGMAN - THE GAME\n";
+	std::cout << "******************\n\n";
+
+	std::cout << "CHOOSE CATEGORY: \n\n";
+
+	for (const auto& name : fs::directory_iterator("Categories/"))//gets file paths in folder
+	{
+		fs::path path = name;
+		std::string path_string{ path.u8string() };
+
+		categories.push_back(path_string);
+	}
+
+	for (int i = 0; i < categories.size(); i++)
+	{
+		std::cout << i + 1 << " - " << convertPath(categories[i]) << "\n";
+	}
+
+	std::cout << "\n";
+	std::cin >> choice;
+
+	categoryIndex = choice - 1;
+
+	return categories[categoryIndex];
+}
+
+std::string convertPath(std::string filePath)
+{
+	std::string newName;
+
+	for (int i = 11; i <= (filePath.size() - 5); i++)//skips "category/" and ends before ".txt"
+	{
+		newName.push_back(toupper(filePath[i]));
+	}
+
+	return newName;
+}
+
+std::string readFile(std::string filePath)
+{
+	std::vector<std::string> words;
+
+	std::ifstream file;
+	std::string line;
+
+	file.open(filePath);
+	while (getline(file, line))
+	{
+		words.push_back(line);
+	}
+
+	file.close();
+
+	return randomWord(words);
+}
+
 std::string randomWord(std::vector<std::string> words)
 {
 	int randomNumber = rand() % words.size();
 	return words[randomNumber];
 }
 
-void difficulty(int* health)
+int difficulty()
 {
-	bool valid = false;
-
 	do
 	{
 		system("cls");
@@ -177,26 +239,22 @@ void difficulty(int* health)
 		switch (mode)
 		{
 		case '1':
-			*health = 8;
-			valid = true;
-			break;
+			return 8;
+
 		case '2':
-			*health = 6;
-			valid = true;
-			break;
+			return 6;
+
 		case '3':
-			*health = 4;
-			valid = true;
-			break;
+			return 4;
+
 		default:
-			valid = false;
 			std::cout << "WRONG INPUT - TRY AGAIN...";
 			std::cin.clear();
 			std::cin.ignore();
 			std::cin.get();
 			break;
 		}
-	} while (valid == false);
+	} while (true);
 }
 
 bool validGuess(char guess, std::string wrongGuesses, std::string correctGuesses)
@@ -224,27 +282,11 @@ std::string spacer(std::string word)
 	int length = word.size();
 	std::string output;
 
-	for (int i = 0; i < length; i = i++)
+	for (int i = 0; i < length; i++)
 	{
 		output += word.substr(i, 1) + " ";
 	}
 	return output;
-}
-
-void readFile(std::vector<std::string>* words, std::string fileName)
-{
-	std::ifstream file;
-	std::string line;
-
-	words->clear();
-
-	file.open(fileName);
-	while (getline(file, line))
-	{
-		words->push_back(line);
-	}
-
-	file.close();
 }
 
 bool restart()
@@ -262,48 +304,4 @@ bool restart()
 	default:
 		return false;
 	}
-}
-
-std::string chooseCategory(std::vector<std::string>* words)
-{
-	std::string categoryName;
-	int choice;
-	std::vector<std::string> categories;
-
-	system("cls");
-	std::cout << "HANGMAN - THE GAME\n";
-	std::cout << "******************\n\n";
-
-	std::cout << "CHOOSE CATEGORY: \n\n";
-
-	for (const auto& name : fs::directory_iterator("Categories/"))//gets file paths in folder
-	{
-		fs::path path = name;
-		std::string path_string{ path.u8string() };
-
-		categories.push_back(path_string);
-	}
-
-	for (int i = 0; i < categories.size(); i++)
-	{
-		std::cout << i + 1 << " - " << convertPath(categories[i]) << "\n";
-	}
-
-	std::cout << "\n";
-	std::cin >> choice;
-	readFile(words, categories[choice - 1]);
-
-	return convertPath(categories[choice - 1]);
-}
-
-std::string convertPath(std::string path)
-{
-	std::string newName;
-
-	for (int i = 11; i <= (path.size() - 5); i++)//skips "category/" and ends before ".txt"
-	{
-		newName.push_back(toupper(path[i]));
-	}
-
-	return newName;
 }
