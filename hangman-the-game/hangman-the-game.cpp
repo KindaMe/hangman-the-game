@@ -186,27 +186,46 @@ std::string chooseCategory()
 			categories.push_back(path_string);
 		}
 
-		for (int i = 0; i < categories.size(); i++)
+		if (categories.size() != 0)
 		{
-			std::cout << i + 1 << " - " << convertPath(categories[i]) << "\n";
+			for (int i = 0; i < categories.size(); i++)
+			{
+				std::cout << i + 1 << " - " << convertPath(categories[i]) << "\n";
+			}
+		}
+		else
+		{
+			std::cout << "NO CATEGORIES FOUND - CHECK YOUR GAME FILES...\n\nVisit\ngithub.com/KindaMe\nfor more info.";
+
+			std::cin.get();
+			exit(1);
 		}
 
 		std::cout << "\n";
+		std::cout << "CHOICE: ";
 		if (std::cin >> choice && (choice != 0 && choice <= categories.size()))
 		{
 			categoryIndex = choice - 1;
 
-			return categories[categoryIndex];
+			std::ifstream peekFile(categories[categoryIndex]);
+			if (peekFile.peek() == EOF)
+			{
+				std::cout << "\nCATEGORY IS EMPTY - CHOOSE A DIFFERENT ONE...";
+			}
+			else
+			{
+				return categories[categoryIndex];
+			}
 		}
 		else
 		{
-			std::cout << "WRONG INPUT - TRY AGAIN...";
-			std::cin.clear();
-			std::cin.ignore(1000, '\n');
-			std::cin.get();
-
-			categories.clear();
+			std::cout << "\nWRONG INPUT - TRY AGAIN...";
 		}
+		std::cin.clear();
+		std::cin.ignore(1000, '\n');
+		std::cin.get();
+
+		categories.clear();
 	} while (true);
 }
 
@@ -270,7 +289,7 @@ int difficulty()
 		std::cout << "\n3 - HARD\n\n";
 
 		char mode;
-
+		std::cout << "CHOICE: ";
 		std::cin >> mode;
 
 		switch (mode)
@@ -285,7 +304,7 @@ int difficulty()
 			return 4;
 
 		default:
-			std::cout << "WRONG INPUT - TRY AGAIN...";
+			std::cout << "\nWRONG INPUT - TRY AGAIN...";
 			std::cin.clear();
 			std::cin.ignore();
 			std::cin.get();
