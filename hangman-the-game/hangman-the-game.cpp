@@ -18,6 +18,7 @@ std::string readFile(std::string filePath, int* spaceCounter);
 bool restart();
 std::string chooseCategory();
 std::string convertPath(std::string filePath);
+void hangman(int health);
 
 int main()
 {
@@ -78,6 +79,8 @@ void gameplayLoop()
 			std::cout << "CATEGORY: " << categoryName << "\n\n";
 
 			std::cout << spacer(wordBlank);
+
+			hangman(health);
 
 			std::cout << "\n\n\nATTEMPTS LEFT: " << health;
 			(wrongGuesses.length() == 0) ? std::cout << "\nUSED LETTERS: NONE" : std::cout << "\nUSED LETTERS: " << spacer(wrongGuesses);
@@ -146,10 +149,18 @@ void gameplayLoop()
 
 	if (score == length)
 	{
+		std::cout << "\n\n";
+		std::cout << " \\O/\n";
+		std::cout << "  I\n";
+		std::cout << "  I\n";
+		std::cout << " / \\";
+
 		std::cout << "\n\nYOU WIN!";
 	}
 	else if (health == 0)
 	{
+		hangman(health);
+
 		std::cout << "\n\nYOU LOSE.";
 	}
 }
@@ -159,31 +170,44 @@ std::string chooseCategory()
 	int choice, categoryIndex;
 	std::vector<std::string> categories;
 
-	system("cls");
-	std::cout << "HANGMAN - THE GAME\n";
-	std::cout << "******************\n\n";
-
-	std::cout << "CHOOSE CATEGORY: \n\n";
-
-	for (const auto& name : fs::directory_iterator("Categories/"))//gets file paths in folder
+	do
 	{
-		fs::path path = name;
-		std::string path_string{ path.u8string() };
+		system("cls");
+		std::cout << "HANGMAN - THE GAME\n";
+		std::cout << "******************\n\n";
 
-		categories.push_back(path_string);
-	}
+		std::cout << "CHOOSE CATEGORY: \n\n";
 
-	for (int i = 0; i < categories.size(); i++)
-	{
-		std::cout << i + 1 << " - " << convertPath(categories[i]) << "\n";
-	}
+		for (const auto& name : fs::directory_iterator("Categories/"))//gets file paths in folder
+		{
+			fs::path path = name;
+			std::string path_string{ path.u8string() };
 
-	std::cout << "\n";
-	std::cin >> choice;
+			categories.push_back(path_string);
+		}
 
-	categoryIndex = choice - 1;
+		for (int i = 0; i < categories.size(); i++)
+		{
+			std::cout << i + 1 << " - " << convertPath(categories[i]) << "\n";
+		}
 
-	return categories[categoryIndex];
+		std::cout << "\n";
+		if (std::cin >> choice && (choice != 0 && choice <= categories.size()))
+		{
+			categoryIndex = choice - 1;
+
+			return categories[categoryIndex];
+		}
+		else
+		{
+			std::cout << "WRONG INPUT - TRY AGAIN...";
+			std::cin.clear();
+			std::cin.ignore(1000, '\n');
+			std::cin.get();
+
+			categories.clear();
+		}
+	} while (true);
 }
 
 std::string convertPath(std::string filePath)
@@ -306,7 +330,7 @@ bool restart()
 {
 	char yn;
 
-	std::cout << "\n\nRestart? (y/n)";
+	std::cout << "\n\nRestart? (y/n)\n";
 	std::cin >> yn;
 	yn = toupper(yn);
 
@@ -316,5 +340,102 @@ bool restart()
 		return true;
 	default:
 		return false;
+	}
+}
+
+void hangman(int health)
+{
+	switch (health)
+	{
+	case 0:
+		std::cout << "\n\n";
+		std::cout << "  ______\n";
+		std::cout << "  |    |\n";
+		std::cout << "  |    O\n";
+		std::cout << "  |   /I\\ \n";
+		std::cout << "  |    I\n";
+		std::cout << "  |   / \\ \n";
+		std::cout << "__|__";
+		break;
+	case 1:
+		std::cout << "\n\n";
+		std::cout << "  ______\n";
+		std::cout << "  |    |\n";
+		std::cout << "  |    O\n";
+		std::cout << "  |   /I\\ \n";
+		std::cout << "  |    I\n";
+		std::cout << "  |   / \n";
+		std::cout << "__|__";
+		break;
+	case 2:
+		std::cout << "\n\n";
+		std::cout << "  ______\n";
+		std::cout << "  |    |\n";
+		std::cout << "  |    O\n";
+		std::cout << "  |   /I\\ \n";
+		std::cout << "  |    I\n";
+		std::cout << "  |\n";
+		std::cout << "__|__";
+		break;
+	case 3:
+		std::cout << "\n\n";
+		std::cout << "  ______\n";
+		std::cout << "  |    |\n";
+		std::cout << "  |    O\n";
+		std::cout << "  |   /I\\ \n";
+		std::cout << "  |\n";
+		std::cout << "  |\n";
+		std::cout << "__|__";
+		break;
+	case 4:
+		std::cout << "\n\n";
+		std::cout << "  ______\n";
+		std::cout << "  |    |\n";
+		std::cout << "  |    O\n";
+		std::cout << "  |   /I\n";
+		std::cout << "  |\n";
+		std::cout << "  |\n";
+		std::cout << "__|__";
+		break;
+	case 5:
+		std::cout << "\n\n";
+		std::cout << "  ______\n";
+		std::cout << "  |    |\n";
+		std::cout << "  |    O\n";
+		std::cout << "  |    I\n";
+		std::cout << "  |\n";
+		std::cout << "  |\n";
+		std::cout << "__|__";
+		break;
+	case 6:
+		std::cout << "\n\n";
+		std::cout << "  ______\n";
+		std::cout << "  |    |\n";
+		std::cout << "  |    O\n";
+		std::cout << "  |\n";
+		std::cout << "  |\n";
+		std::cout << "  |\n";
+		std::cout << "__|__";
+		break;
+	case 7:
+		std::cout << "\n\n";
+		std::cout << "  ______\n";
+		std::cout << "  |    |\n";
+		std::cout << "  |\n";
+		std::cout << "  |\n";
+		std::cout << "  |\n";
+		std::cout << "  |\n";
+		std::cout << "__|__";
+		break;
+	case 8:
+		std::cout << "\n\n";
+		std::cout << "  ______\n";
+		std::cout << "  |\n";
+		std::cout << "  |\n";
+		std::cout << "  |\n";
+		std::cout << "  |\n";
+		std::cout << "  |\n";
+		std::cout << "__|__";
+		break;
 	}
 }
